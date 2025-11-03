@@ -7,7 +7,7 @@
 # pxs1282@miami.edu
 # October 7th, 2025
 #
-# Manipulating dive computer data to calculating the total bottom time, average
+# Manipulating dive computer data to calculate the total bottom time, average
 # bottom time, and number of dives.
 #
 ################################################################################
@@ -15,9 +15,9 @@
 # SET UP #######################################################################
 
 ## Load packages ---------------------------------------------------------------
-library(EVR628tools)
 library(tidyverse)
 library(janitor)
+library(lubridate)
 
 ## Load data -------------------------------------------------------------------
 divecomp_data <- read_csv(file = "data/raw/Dive_Log.csv")
@@ -26,14 +26,23 @@ divecomp_data <- read_csv(file = "data/raw/Dive_Log.csv")
 #Tidy data removed columns, made names into snake case, converted seconds to minutes,
 #removed freediving/short dives, converted depth to metric where in imperial,
 #removed imperial column, and reordered columns
+
 tidy_divecomp_data <- divecomp_data %>%
   select(1, 5, 8, 13, 14, 18) %>%
   clean_names() %>%
+  mutate(end_datetime = mdy_hms(end_date),
+         date = as_date(end_datetime),
+         end_time = format(end_datetime, "%H:%M:%S")) %>%
+           select(-end_datetime, -end_date) %>%
+  mutate(start_datetime = mdy_hms(start_date),
+         start_time = format(start_datetime, "%H:%M:%S")) %>%
+           select(-start_datetime, -start_date) %>%
   mutate(max_time = max_time/60) %>%
   filter(max_time >=  3) %>%
   mutate(max_depth = if_else(imperial_units, max_depth * 0.3048, max_depth)) %>%
   select(-imperial_units) %>%
-  select(dive_number, start_date, end_date, max_time, max_depth)
+  select(dive_number, date, start_time, end_time, max_time, max_depth) %>%
+  rename(dive_time = max_time)
 
 tidy_divecomp_data
 
@@ -62,3 +71,6 @@ tidy_divecomp_data |>
 
 write_rds(tidy_divecomp_data, "data/processed/Tidy_Dive_Computer_Data.rds")
 read_rds("data/processed/Tidy_Dive_Computer_Data.rds")
+
+
+
