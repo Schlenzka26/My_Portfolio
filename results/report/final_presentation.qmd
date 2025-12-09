@@ -42,13 +42,16 @@ resulting tidy data I visualized relationships between dives per month, dive
 time and depth, and dive date and depth. Finally, I displayed my most concentrated
 locations for diving over the past 2 years.
 
-## Comparative Findings
+## Comparative Findings {.scrollable}
 
 The answer to your questions
 
 ![Dives by month](../img/dives_by_month.png)
 ![Combined dive plots](../img/combined_dive_plots.png)
+
 ## Geographical Representation 
+
+Regular dives were performed primarily in Monterey, CA, USA and the Gili Islands off of Lombok, Indonesia.
 
 ```{r}
 
@@ -60,6 +63,7 @@ library(mapview)
 library(terra)        
 library(tidyterra) 
 library(here)  
+library(tidyverse)
 
 depth <- rast(here("data/raw/depth_raster.tif"))
 
@@ -93,7 +97,18 @@ regular_dive_areas <- ggplot() + geom_spatraster(data = depth) +
     labs(caption = "P.S. Dive Computer Data")
 ```
 
-Regular dives were performed primarily in Monterey, CA, USA and the Gili Islands in Indonesia.
+```{r}
+tidy_divecomp_data <- read_rds(here("data/processed/Tidy_Dive_Computer_Data.rds"))
+
+avg_dives_per_month <- tidy_divecomp_data %>%
+  mutate(month = floor_date(date, "month")) %>%   
+  count(month) %>%                                
+  summarise(avg_dives = mean(n)) %>%
+  pull(avg_dives)
+
+```
+
+On average, I dive `r scales::number(avg_dives_per_month, accuracy = 0.1)` times per month.
 
 ## References
 
