@@ -65,6 +65,14 @@ tidy_divecomp_data |>
 tidy_divecomp_data |>
   summarize(avg_depth_per_dive = mean(max_depth))
 
+# Calculate average dives per month
+avg_dives_per_month <- tidy_divecomp_data %>%
+  mutate(month = floor_date(date, "month")) %>%   # convert each date to its month
+  count(month) %>%                                # count dives per month
+  summarise(avg_dives = mean(n))
+
+avg_dives_per_month
+
 # EXPORT #######################################################################
 
 # Tabular representation of data set
