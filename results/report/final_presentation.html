@@ -156,14 +156,16 @@ Priya Schlenzka
 <h2>Data Processing</h2>
 <p>To transform my raw data into final results, I first tidied my dive log by converting dates and times, standardizing depth measurements, and cleaning column names. I then filtered the dataset to remove any dives &lt;3 minutes to more accurately represent logged SCUBA dives and related dive time. With the resulting tidy data I visualized relationships between dives per month, dive time and depth, and dive date and depth. Finally, I displayed my most concentrated locations for diving over the past 2 years.</p>
 </section>
-<section id="comparative-findings" class="slide level2">
+<section id="comparative-findings" class="slide level2 scrollable">
 <h2>Comparative Findings</h2>
 <p>The answer to your questions</p>
 <p><img data-src="../img/dives_by_month.png" alt="Dives by month"> <img data-src="../img/combined_dive_plots.png" alt="Combined dive plots"></p>
 </section>
 <section id="geographical-representation" class="slide level2">
 <h2>Geographical Representation</h2>
-<p>Regular dives were performed primarily in Monterey, CA, USA and the Gili Islands in Indonesia.</p>
+<p>Regular dives were performed primarily in Monterey, CA, USA and the Gili Islands off of Lombok, Indonesia.</p>
+
+<img data-src="final_presentation_files/figure-revealjs/unnamed-chunk-1-1.png" width="960" class="r-stretch"><p>On average, I dive 7.3 times per month.</p>
 </section>
 <section id="references" class="slide level2">
 <h2>References</h2>
@@ -388,6 +390,44 @@ Priya Schlenzka
         ]
       });
     </script>
+    
+    <script>
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+      // slide changes (different for each slide format).
+      (function () {
+        // dispatch for htmlwidgets
+        function fireSlideEnter() {
+          const event = window.document.createEvent("Event");
+          event.initEvent("slideenter", true, true);
+          window.document.dispatchEvent(event);
+        }
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+          fireSlideEnter();
+
+          // dispatch for shiny
+          if (window.jQuery) {
+            if (previousSlide) {
+              window.jQuery(previousSlide).trigger("hidden");
+            }
+            if (currentSlide) {
+              window.jQuery(currentSlide).trigger("shown");
+            }
+          }
+        }
+
+        // hookup for slidy
+        if (window.w3c_slidy) {
+          window.w3c_slidy.add_observer(function (slide_num) {
+            // slide_num starts at position 1
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+          });
+        }
+
+      })();
+    </script>
+
     <script id="quarto-html-after-body" type="application/javascript">
     window.document.addEventListener("DOMContentLoaded", function (event) {
       const toggleBodyColorMode = (bsSheetEl) => {
